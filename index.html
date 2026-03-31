@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelPlan - Your Travel Planning Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">✈️</span> TravelPlan
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+                <li><a href="#planner" class="nav-link" data-section="planner">Plan Trip</a></li>
+                <li><a href="#trips" class="nav-link" data-section="trips">My Trips</a></li>
+                <li><a href="#tips" class="nav-link" data-section="tips">Tips</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="section home-section">
+        <div class="hero-content">
+            <h1>Plan Your Next Adventure</h1>
+            <p>Create, organize, and manage your perfect travel itinerary</p>
+            <button class="btn btn-primary" onclick="navigateTo('planner')">Start Planning</button>
+        </div>
+        <div class="hero-image">
+            <div class="travel-icons">
+                <span class="icon">🏖️</span>
+                <span class="icon">🗻</span>
+                <span class="icon">🏛️</span>
+                <span class="icon">🌆</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trip Planning Section -->
+    <section id="planner" class="section planner-section">
+        <div class="section-header">
+            <h2>Create a New Trip</h2>
+            <p>Plan your journey step by step</p>
+        </div>
+
+        <div class="planner-container">
+            <!-- Trip Form -->
+            <div class="trip-form">
+                <h3>Trip Details</h3>
+                <form id="tripForm">
+                    <div class="form-group">
+                        <label for="tripName">Trip Name *</label>
+                        <input type="text" id="tripName" placeholder="e.g., Summer Europe 2024" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="destination">Destination *</label>
+                            <input type="text" id="destination" placeholder="e.g., Paris, France" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="travelers">Number of Travelers *</label>
+                            <input type="number" id="travelers" min="1" value="1" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startDate">Start Date *</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date *</label>
+                            <input type="date" id="endDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="budget">Total Budget ($) *</label>
+                            <input type="number" id="budget" min="0" placeholder="e.g., 5000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tripType">Trip Type *</label>
+                            <select id="tripType" required>
+                                <option value="">Select Type</option>
+                                <option value="Beach">Beach</option>
+                                <option value="Adventure">Adventure</option>
+                                <option value="Cultural">Cultural</option>
+                                <option value="Business">Business</option>
+                                <option value="Road Trip">Road Trip</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" placeholder="Add any additional notes about your trip..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">Create Trip</button>
+                </form>
+            </div>
+
+            <!-- Quick Tips -->
+            <div class="planning-tips">
+                <h3>💡 Planning Tips</h3>
+                <ul>
+                    <li>Book flights at least 6-8 weeks in advance</li>
+                    <li>Set realistic daily budgets</li>
+                    <li>Research visa requirements early</li>
+                    <li>Check weather conditions for your destination</li>
+                    <li>Keep emergency contacts handy</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Trips Section -->
+    <section id="trips" class="section trips-section">
+        <div class="section-header">
+            <h2>My Trips</h2>
+            <p>Manage your upcoming and past adventures</p>
+        </div>
+
+        <div class="trips-container">
+            <div id="tripsGrid" class="trips-grid">
+                <!-- Trip cards will be inserted here by JavaScript -->
+                <div class="empty-state">
+                    <p>📋 No trips planned yet. <a href="#" onclick="navigateTo('planner')">Create your first trip!</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trip Details Modal -->
+    <div id="tripModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalTripName"></h2>
+                <span id="tripStatus" class="trip-status"></span>
+            </div>
+
+            <div class="modal-body">
+                <!-- Trip Info Tabs -->
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="overview">Overview</button>
+                    <button class="tab-button" data-tab="itinerary">Itinerary</button>
+                    <button class="tab-button" data-tab="budget">Budget</button>
+                </div>
+
+                <!-- Overview Tab -->
+                <div id="overview" class="tab-content active">
+                    <div class="trip-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">📍 Destination</span>
+                            <span class="detail-value" id="modalDestination"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">📅 Duration</span>
+                            <span class="detail-value" id="modalDuration"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">👥 Travelers</span>
+                            <span class="detail-value" id="modalTravelers"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">💰 Budget</span>
+                            <span class="detail-value" id="modalBudget"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">🏷️ Type</span>
+                            <span class="detail-value" id="modalType"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">📝 Notes</span>
+                            <span class="detail-value" id="modalNotes"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itinerary Tab -->
+                <div id="itinerary" class="tab-content">
+                    <div class="itinerary-add">
+                        <h4>Add Activity</h4>
+                        <div class="activity-form">
+                            <input type="date" id="activityDate" placeholder="Date">
+                            <input type="text" id="activityName" placeholder="Activity name" maxlength="50">
+                            <select id="activityCategory">
+                                <option value="Sightseeing">Sightseeing</option>
+                                <option value="Dining">Dining</option>
+                                <option value="Adventure">Adventure</option>
+                                <option value="Rest">Rest</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="time" id="activityTime" placeholder="Time">
+                            <input type="number" id="activityCost" placeholder="Cost ($)" min="0">
+                            <button class="btn btn-secondary" onclick="addActivity()">Add Activity</button>
+                        </div>
+                    </div>
+                    <div id="activitiesList" class="activities-list">
+                        <!-- Activities will be added here -->
+                    </div>
+                </div>
+
+                <!-- Budget Tab -->
+                <div id="budget" class="tab-content">
+                    <div class="budget-overview">
+                        <div class="budget-stat">
+                            <span class="stat-label">Total Budget</span>
+                            <span class="stat-value" id="budgetTotal">$0</span>
+                        </div>
+                        <div class="budget-stat">
+                            <span class="stat-label">Spent</span>
+                            <span class="stat-value spent" id="budgetSpent">$0</span>
+                        </div>
+                        <div class="budget-stat">
+                            <span class="stat-label">Remaining</span>
+                            <span class="stat-value" id="budgetRemaining">$0</span>
+                        </div>
+                    </div>
+                    <div class="budget-chart">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="budgetProgress"></div>
+                        </div>
+                        <p id="budgetPercentage"></p>
+                    </div>
+                    <div id="budgetBreakdown" class="budget-breakdown">
+                        <!-- Budget breakdown by category -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="deleteTrip()">Delete Trip</button>
+                <button class="btn btn-primary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips Section -->
+    <section id="tips" class="section tips-section">
+        <div class="section-header">
+            <h2>Travel Tips & Guides</h2>
+            <p>Make your journey smooth and memorable</p>
+        </div>
+
+        <div class="tips-grid">
+            <div class="tip-card">
+                <div class="tip-icon">✈️</div>
+                <h3>Before You Fly</h3>
+                <p>Check passport validity, book flights early, compare prices across sites, and consider travel insurance.</p>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">🏨</div>
+                <h3>Accommodation</h3>
+                <p>Book hotels in advance, read reviews carefully, check location on maps, and always confirm your booking.</p>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">💳</div>
+                <h3>Money Matters</h3>
+                <p>Set daily budgets, use local currency, notify your bank, keep receipts, and track your spending.</p>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">🗺️</div>
+                <h3>Navigation</h3>
+                <p>Download offline maps, use public transport passes, plan routes in advance, and save emergency locations.</p>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">🎒</div>
+                <h3>Packing</h3>
+                <p>Make a checklist, pack light, use packing cubes, leave room for souvenirs, and wear comfortable shoes.</p>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">🛡️</div>
+                <h3>Safety</h3>
+                <p>Stay aware of surroundings, use secure bags, avoid displaying valuables, and keep copies of documents.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 TravelPlan. Plan your journey with confidence.</p>
+            <div class="social-links">
+                <a href="#">Twitter</a>
+                <a href="#">Facebook</a>
+                <a href="#">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
