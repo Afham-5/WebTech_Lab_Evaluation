@@ -743,7 +743,7 @@ function shareTrip() {
 
 // ==================== GEMINI AI INTEGRATION ====================
 
-const GEMINI_API_KEY = "AIzaSyCoHIC-VowgCykoIbk4-taLoyrO2tbQkko";
+const GEMINI_API_KEY = "YOUR API KEY";
 
 async function generateTravelItinerary(trip, days) {
   if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
