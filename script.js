@@ -307,18 +307,17 @@ function openTripDetails(tripId) {
 
   document.getElementById("tripModal").classList.add("active");
   document.body.style.overflow = "hidden";
+  // Scroll modal content to top
+  document.querySelector(".modal-content").scrollTop = 0;
 }
 
 function closeModal() {
   document.getElementById("tripModal").classList.remove("active");
   document.body.style.overflow = "";
   currentTripId = null;
+  // Ensure trips section is visible
+  navigateTo("trips");
 }
-
-// Close on backdrop click
-document.getElementById("tripModal").addEventListener("click", function (e) {
-  if (e.target === this) closeModal();
-});
 
 // ==================== TABS ====================
 
@@ -764,11 +763,18 @@ async function generateTravelItinerary(trip, days) {
       .trim();
   };
 
+  // For long trips, ask for concise output to avoid token limits
+  const isLongTrip = days > 7;
+  const activitiesPerDay = isLongTrip ? "3-4" : "4-6";
+  const conciseNote = isLongTrip
+    ? "\nCRITICAL: This is a long trip. Keep descriptions SHORT (1 sentence max). Keep tips SHORT (under 10 words). Keep meal recommendations to just the name. Do NOT be verbose — brevity is essential to fit within response limits."
+    : "";
+
   // Gemini uses a single "contents" array — we combine system instructions
   // and the user request into one user turn (the simplest reliable approach).
   const prompt = `You are an expert travel planner. Create a detailed, practical, day-by-day travel itinerary.
 
-IMPORTANT: Respond with ONLY a valid JSON object — no markdown, no backticks, no explanation, no extra text before or after.
+IMPORTANT: Respond with ONLY a valid JSON object — no markdown, no backticks, no explanation, no extra text before or after.${conciseNote}
 
 Required JSON structure:
 {
@@ -785,19 +791,19 @@ Required JSON structure:
         {
           "time": "HH:MM",
           "name": "activity name",
-          "description": "what to do and why it's great",
+          "description": "brief description",
           "category": "Sightseeing|Dining|Adventure|Rest|Transport|Shopping|Other",
           "estimatedCost": number,
-          "tips": "practical tip"
+          "tips": "short tip"
         }
       ],
       "mealRecommendations": {
-        "breakfast": "specific recommendation",
-        "lunch": "specific recommendation",
-        "dinner": "specific recommendation"
+        "breakfast": "recommendation",
+        "lunch": "recommendation",
+        "dinner": "recommendation"
       },
       "dayTotal": number,
-      "notableSpots": "2-3 notable spots for the day"
+      "notableSpots": "2-3 notable spots"
     }
   ],
   "totalEstimatedCost": number,
@@ -815,7 +821,7 @@ TRIP DETAILS:
 - Pace: ${sanitize(trip.pace || "Moderate")}
 - Food Preference: ${sanitize(trip.foodPreference)}${trip.dietary ? " | Dietary Restrictions: " + sanitize(trip.dietary) : ""}${trip.interests ? "\n- Special Interests: " + sanitize(trip.interests) : ""}${trip.notes ? "\n- Notes: " + sanitize(trip.notes) : ""}
 
-Generate a complete ${days}-day itinerary. Each day should have 4-6 activities with realistic timing. Meals must respect the food preference. Keep all costs within the daily budget. Return ONLY the JSON object.`;
+Generate a complete ${days}-day itinerary. Each day should have ${activitiesPerDay} activities with realistic timing. Meals must respect the food preference. Keep all costs within the daily budget. Return ONLY the JSON object.`;
 
   // Use gemini-2.5-flash for better JSON handling
   const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -827,8 +833,8 @@ Generate a complete ${days}-day itinerary. Each day should have 4-6 activities w
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 16000, // Increased for long multi-day itineraries
-        responseMimeType: "application/json", // tells Gemini to return pure JSON
+        maxOutputTokens: 65536,
+        responseMimeType: "application/json",
       },
     }),
   });
@@ -836,7 +842,6 @@ Generate a complete ${days}-day itinerary. Each day should have 4-6 activities w
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
     const msg = err.error?.message || response.statusText;
-    // Friendly messages for common errors
 
     alert(msg);
     if (response.status === 400)
@@ -867,26 +872,23 @@ Generate a complete ${days}-day itinerary. Each day should have 4-6 activities w
     // First try direct parse (if response is pure JSON)
     jsonObj = JSON.parse(cleaned);
   } catch (e1) {
-    // If direct parse fails, extract JSON object from text
+    // If direct parse fails, try to repair truncated JSON
     try {
-      // Find JSON object boundaries more carefully
       const start = cleaned.indexOf("{");
-      const lastEnd = cleaned.lastIndexOf("}");
-
-      if (start === -1 || lastEnd === -1 || lastEnd <= start) {
-        throw new Error(
-          "No valid JSON object found in response: " +
-            cleaned.substring(0, 500),
-        );
+      if (start === -1) {
+        throw new Error("No JSON object found in response");
       }
 
-      const jsonStr = cleaned.substring(start, lastEnd + 1);
+      let jsonStr = cleaned.substring(start);
+
+      // Attempt to repair truncated JSON by closing unclosed brackets
+      jsonStr = repairTruncatedJSON(jsonStr);
       jsonObj = JSON.parse(jsonStr);
+      console.warn("Parsed repaired (truncated) JSON — some days may be missing.");
     } catch (e2) {
       console.error("Raw response:", cleaned);
       console.error("JSON parse error:", e2.message);
 
-      // Provide detailed error message
       throw new Error(
         `Failed to parse Gemini response as JSON: ${e2.message}. Response starts with: ${cleaned.substring(0, 200)}`,
       );
@@ -894,6 +896,95 @@ Generate a complete ${days}-day itinerary. Each day should have 4-6 activities w
   }
 
   return jsonObj;
+}
+
+/**
+ * Attempts to repair truncated JSON by closing any unclosed brackets/braces.
+ * This handles the case where Gemini runs out of tokens mid-response.
+ */
+function repairTruncatedJSON(json) {
+  // Track open brackets and braces
+  let inString = false;
+  let escaped = false;
+  const stack = [];
+
+  for (let i = 0; i < json.length; i++) {
+    const ch = json[i];
+
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+
+    if (ch === "\\") {
+      escaped = true;
+      continue;
+    }
+
+    if (ch === '"') {
+      inString = !inString;
+      continue;
+    }
+
+    if (inString) continue;
+
+    if (ch === "{" || ch === "[") {
+      stack.push(ch);
+    } else if (ch === "}") {
+      if (stack.length > 0 && stack[stack.length - 1] === "{") stack.pop();
+    } else if (ch === "]") {
+      if (stack.length > 0 && stack[stack.length - 1] === "[") stack.pop();
+    }
+  }
+
+  // If we were inside a string when truncated, close the string
+  if (inString) {
+    json += '"';
+  }
+
+  // Find the last valid position — trim trailing incomplete key-value pairs
+  // Look for the last complete value (ends with }, ], number, "string", true, false, null)
+  let trimmed = json;
+  if (stack.length > 0) {
+    // Remove any trailing partial content after the last comma or complete value
+    const lastGoodComma = Math.max(
+      trimmed.lastIndexOf(","),
+      trimmed.lastIndexOf("}"),
+      trimmed.lastIndexOf("]"),
+    );
+    if (lastGoodComma > 0) {
+      const after = trimmed.substring(lastGoodComma);
+      // If the last significant char is a comma, remove it (dangling comma)
+      if (trimmed[lastGoodComma] === ",") {
+        trimmed = trimmed.substring(0, lastGoodComma);
+      }
+    }
+  }
+
+  // Close all unclosed brackets in reverse order
+  // Re-calculate stack after trimming
+  const finalStack = [];
+  inString = false;
+  escaped = false;
+  for (let i = 0; i < trimmed.length; i++) {
+    const ch = trimmed[i];
+    if (escaped) { escaped = false; continue; }
+    if (ch === "\\") { escaped = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{" || ch === "[") finalStack.push(ch);
+    else if (ch === "}" && finalStack.length && finalStack[finalStack.length - 1] === "{") finalStack.pop();
+    else if (ch === "]" && finalStack.length && finalStack[finalStack.length - 1] === "[") finalStack.pop();
+  }
+
+  // Close remaining open brackets
+  let suffix = "";
+  while (finalStack.length > 0) {
+    const open = finalStack.pop();
+    suffix += open === "{" ? "}" : "]";
+  }
+
+  return trimmed + suffix;
 }
 
 // ==================== UTILITY FUNCTIONS ====================

@@ -258,11 +258,11 @@
     <div id="tripModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div>
+                <button class="back-btn" onclick="closeModal()">← Back to My Trips</button>
+                <div class="modal-title-row">
                     <h2 id="modalTripName"></h2>
                     <span id="tripStatus" class="trip-status"></span>
                 </div>
-                <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
 
             <div class="modal-body">
@@ -393,7 +393,11 @@
 
             <div class="modal-footer">
                 <button class="btn btn-danger" onclick="deleteTrip()">🗑 Delete Trip</button>
-                <button class="btn btn-primary" onclick="closeModal()">Close</button>
+                <div class="modal-footer-actions">
+                    <button class="btn btn-outline" onclick="regenerateItinerary()">🔄 Regenerate</button>
+                    <button class="btn btn-outline" onclick="printItinerary()">🖨️ Print</button>
+                    <button class="btn btn-outline" onclick="shareTrip()">🔗 Share</button>
+                </div>
             </div>
         </div>
     </div>
