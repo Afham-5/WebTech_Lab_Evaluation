@@ -83,7 +83,7 @@ document
     const interests = document.getElementById("interests").value.trim();
     const notes = document.getElementById("notes").value.trim();
 
-    if (new Date(startDate) >= new Date(endDate)) {
+    if (new Date(startDate) > new Date(endDate)) {
       showToast("End date must be after start date!", "error");
       return;
     }
@@ -743,7 +743,7 @@ function shareTrip() {
 
 // ==================== GEMINI AI INTEGRATION ====================
 
-const GEMINI_API_KEY = "AIzaSyCoHIC-VowgCykoIbk4-taLoyrO2tbQkko";
+const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 
 async function generateTravelItinerary(trip, days) {
   if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
