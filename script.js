@@ -303,7 +303,6 @@ function openTripDetails(tripId) {
 
   displayActivities();
   displayAIItinerary();
-  updateBudgetInfo();
 
   document.getElementById("tripModal").classList.add("active");
   document.body.style.overflow = "hidden";
@@ -378,7 +377,6 @@ function addActivity() {
   document.getElementById("activityTime").value = "";
   document.getElementById("activityCost").value = "";
   displayActivities();
-  updateBudgetInfo();
   showToast("Activity added!", "success", 2000);
 }
 
@@ -428,7 +426,6 @@ function deleteActivity(activityId) {
   trip.activities = trip.activities.filter((a) => a.id !== activityId);
   saveTrips();
   displayActivities();
-  updateBudgetInfo();
   showToast("Activity removed", "info", 2000);
 }
 
@@ -588,52 +585,7 @@ function calcExpense(tripId) {
   return trip.activities.reduce((sum, a) => sum + a.cost, 0);
 }
 
-function updateBudgetInfo() {
-  const trip = trips.find((t) => t.id === currentTripId);
-  if (!trip) return;
 
-  const sym = getCurrencySymbol(trip.currency);
-  const total = trip.budget;
-  const spent = calcExpense(currentTripId);
-  const remaining = total - spent;
-  const pct = total > 0 ? (spent / total) * 100 : 0;
-
-  document.getElementById("budgetTotal").textContent =
-    sym + total.toLocaleString();
-  document.getElementById("budgetSpent").textContent =
-    sym + spent.toLocaleString();
-  document.getElementById("budgetRemaining").textContent =
-    sym + Math.max(0, remaining).toLocaleString();
-  document.getElementById("budgetProgress").style.width =
-    Math.min(pct, 100) + "%";
-  document.getElementById("budgetProgress").style.background =
-    pct > 90
-      ? "var(--danger)"
-      : pct > 70
-        ? "var(--gold)"
-        : "linear-gradient(90deg, var(--brand) 0%, var(--accent) 100%)";
-  document.getElementById("budgetPercentage").textContent =
-    `${Math.round(pct)}% of budget used`;
-
-  const bd = document.getElementById("budgetBreakdown");
-  bd.innerHTML = "";
-  const cats = {};
-  trip.activities.forEach((a) => {
-    cats[a.category] = (cats[a.category] || 0) + a.cost;
-  });
-
-  if (Object.keys(cats).length === 0) {
-    bd.innerHTML =
-      '<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:1rem 0;">No expenses yet</p>';
-    return;
-  }
-  Object.entries(cats).forEach(([cat, amt]) => {
-    const d = document.createElement("div");
-    d.className = "category-breakdown";
-    d.innerHTML = `<div class="category-name">${cat}</div><div class="category-amount">${sym}${amt.toLocaleString()}</div>`;
-    bd.appendChild(d);
-  });
-}
 
 // ==================== EDIT & DELETE ====================
 
