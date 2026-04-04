@@ -1,0 +1,120 @@
+<div id="tripModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button class="back-btn" onclick="closeModal()">← Back to My Trips</button>
+            <div class="modal-title-row">
+                <h2 id="modalTripName"></h2>
+                <span id="tripStatus" class="trip-status"></span>
+            </div>
+        </div>
+
+        <div class="modal-body">
+            <div class="tabs">
+                <button class="tab-button active" data-tab="overview">Overview</button>
+                <button class="tab-button" data-tab="ai-itinerary">AI Itinerary</button>
+                <button class="tab-button" data-tab="itinerary">Activities</button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <div class="trip-details-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">📍 Destination</span>
+                        <span class="detail-value" id="modalDestination"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">📅 Duration</span>
+                        <span class="detail-value" id="modalDuration"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">👥 Travelers</span>
+                        <span class="detail-value" id="modalTravelers"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">💰 Budget</span>
+                        <span class="detail-value" id="modalBudget"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">🏷️ Type</span>
+                        <span class="detail-value" id="modalType"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">🍽️ Food Preference</span>
+                        <span class="detail-value" id="modalFood"></span>
+                    </div>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">📝 Notes</span>
+                        <span class="detail-value" id="modalNotes"></span>
+                    </div>
+                </div>
+                <div class="overview-actions">
+                    <button class="btn btn-outline" onclick="regenerateItinerary()">🔄 Regenerate Itinerary</button>
+                    <button class="btn btn-outline" onclick="printItinerary()">🖨️ Print</button>
+                    <button class="btn btn-outline" onclick="shareTrip()">🔗 Share</button>
+                </div>
+            </div>
+
+            <!-- AI Itinerary Tab -->
+            <div id="ai-itinerary" class="tab-content">
+                <div id="aiItineraryContent">
+                    <div class="empty-itinerary">
+                        <div class="empty-icon">🤖</div>
+                        <p>No AI itinerary generated yet.</p>
+                        <button class="btn btn-primary" onclick="regenerateItinerary()">Generate Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activities Tab -->
+            <div id="itinerary" class="tab-content">
+                <div class="itinerary-add">
+                    <h4>Add Activity</h4>
+                    <div class="activity-form">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="activityDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Activity Name</label>
+                            <input type="text" id="activityName" placeholder="e.g., Visit Taj Mahal" maxlength="80">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="activityCategory">
+                                <option value="Sightseeing">🏛️ Sightseeing</option>
+                                <option value="Dining">🍽️ Dining</option>
+                                <option value="Adventure">🧗 Adventure</option>
+                                <option value="Rest">😴 Rest</option>
+                                <option value="Transport">🚌 Transport</option>
+                                <option value="Shopping">🛍️ Shopping</option>
+                                <option value="Other">✦ Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Time</label>
+                            <input type="time" id="activityTime">
+                        </div>
+                        <div class="form-group">
+                            <label>Cost</label>
+                            <input type="number" id="activityCost" placeholder="0" min="0">
+                        </div>
+                        <div class="form-group activity-form-action">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary" onclick="addActivity()">+ Add</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="activitiesList" class="activities-list"></div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-danger" onclick="deleteTrip()">🗑 Delete Trip</button>
+            <div class="modal-footer-actions">
+                <button class="btn btn-outline" onclick="regenerateItinerary()">🔄 Regenerate</button>
+                <button class="btn btn-outline" onclick="printItinerary()">🖨️ Print</button>
+                <button class="btn btn-outline" onclick="shareTrip()">🔗 Share</button>
+            </div>
+        </div>
+    </div>
+</div>

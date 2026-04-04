@@ -1,0 +1,27 @@
+<section id="trips" class="section trips-section">
+    <div class="section-header">
+        <p class="section-eyebrow">Your adventures</p>
+        <h2>My Trips</h2>
+        <p class="section-sub">Manage your upcoming and past journeys</p>
+    </div>
+
+    <div class="trips-container">
+        <div class="trips-toolbar">
+            <div class="trips-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+                <button class="filter-btn" data-filter="ongoing">Ongoing</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+            <div class="trips-count" id="tripsCount"></div>
+        </div>
+        <div id="tripsGrid" class="trips-grid">
+            <div class="empty-state">
+                <div class="empty-icon">🗺️</div>
+                <h3>No trips yet</h3>
+                <p>Start planning your next adventure</p>
+                <button class="btn btn-primary" onclick="navigateTo('planner')">Plan a Trip</button>
+            </div>
+        </div>
+    </div>
+</section>

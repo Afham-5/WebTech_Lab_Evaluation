@@ -1,0 +1,139 @@
+<section id="planner" class="section planner-section">
+    <div class="section-header">
+        <p class="section-eyebrow">Let's go somewhere</p>
+        <h2>Plan Your Trip</h2>
+        <p class="section-sub">Fill in the details and let AI handle the rest</p>
+    </div>
+
+    <div class="planner-container">
+        <div class="trip-form-card">
+            <h3>Trip Details</h3>
+            <form id="tripForm" novalidate>
+                <div class="form-group">
+                    <label for="tripName">Trip Name <span class="req">*</span></label>
+                    <input type="text" id="tripName" placeholder="e.g., Monsoon Kerala 2025" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="destination">Destination <span class="req">*</span></label>
+                        <input type="text" id="destination" placeholder="e.g., Kyoto, Japan" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="travelers">Travelers <span class="req">*</span></label>
+                        <input type="number" id="travelers" min="1" value="1" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startDate">Start Date <span class="req">*</span></label>
+                        <input type="date" id="startDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End Date <span class="req">*</span></label>
+                        <input type="date" id="endDate" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="budget">Total Budget (₹ / $) <span class="req">*</span></label>
+                        <input type="number" id="budget" min="0" placeholder="e.g., 50000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency">
+                            <option value="INR">₹ INR</option>
+                            <option value="USD">$ USD</option>
+                            <option value="EUR">€ EUR</option>
+                            <option value="GBP">£ GBP</option>
+                            <option value="JPY">¥ JPY</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tripType">Trip Type <span class="req">*</span></label>
+                        <select id="tripType" required>
+                            <option value="">Select Type</option>
+                            <option value="Beach">🏖️ Beach</option>
+                            <option value="Adventure">🧗 Adventure</option>
+                            <option value="Cultural">🏛️ Cultural</option>
+                            <option value="Business">💼 Business</option>
+                            <option value="Road Trip">🚗 Road Trip</option>
+                            <option value="Honeymoon">💑 Honeymoon</option>
+                            <option value="Family">👨‍👩‍👧 Family</option>
+                            <option value="Solo">🎒 Solo</option>
+                            <option value="Other">✦ Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pace">Travel Pace</label>
+                        <select id="pace">
+                            <option value="Relaxed">🌿 Relaxed</option>
+                            <option value="Moderate" selected>⚖️ Moderate</option>
+                            <option value="Intensive">⚡ Intensive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="foodPreference">Food Preference <span class="req">*</span></label>
+                        <select id="foodPreference" required>
+                            <option value="">Select Preference</option>
+                            <option value="Vegetarian">🥗 Vegetarian</option>
+                            <option value="Vegan">🌱 Vegan</option>
+                            <option value="Non-Vegetarian">🍖 Non-Vegetarian</option>
+                            <option value="Halal">Halal</option>
+                            <option value="Kosher">Kosher</option>
+                            <option value="No Preference">No Preference</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dietary">Dietary Restrictions</label>
+                        <input type="text" id="dietary" placeholder="e.g., Gluten-free, Nut allergy">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="interests">Special Interests</label>
+                    <input type="text" id="interests" placeholder="e.g., photography, history, street food, hiking">
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes" placeholder="Any special requests, must-see places, or things to avoid..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                    <span class="btn-text">✦ Generate AI Itinerary</span>
+                    <span class="btn-loader" style="display:none;">
+                        <span class="spinner"></span> Crafting your trip...
+                    </span>
+                </button>
+            </form>
+        </div>
+
+        <div class="sidebar">
+            <div class="planning-tips-card">
+                <h3>💡 Planning Tips</h3>
+                <ul>
+                    <li>Book flights 6–8 weeks in advance</li>
+                    <li>Check visa requirements early</li>
+                    <li>Set realistic daily budgets</li>
+                    <li>Research local weather conditions</li>
+                    <li>Keep emergency contacts handy</li>
+                    <li>Download offline maps before you go</li>
+                </ul>
+            </div>
+            <div class="ai-badge-card">
+                <div class="ai-badge-icon">🤖</div>
+                <h4>Powered by Gemini AI</h4>
+                <p>Our AI planner generates personalised day-by-day itineraries, meal recommendations, and insider tips tailored to your budget and preferences.</p>
+            </div>
+        </div>
+    </div>
+</section>
